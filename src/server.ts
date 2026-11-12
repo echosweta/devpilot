@@ -6,6 +6,8 @@ import requestLogger from "./middleware/requestLogger.js";
 import logsRouter from "./routes/logs.js";
 import metricsRouter from "./routes/metrics.js";
 import simulatorRouter from "./routes/simulator.js";
+import investigateRouter from "./routes/investigate.js";
+import deploymentsRouter from "./routes/deployments.js";
 
 dotenv.config();
 
@@ -23,6 +25,8 @@ app.use(requestLogger);
 app.use("/api/logs", logsRouter);
 app.use("/api/metrics", metricsRouter);
 app.use("/api/simulate", simulatorRouter);
+app.use("/api/investigate", investigateRouter);
+app.use("/api/deployments", deploymentsRouter);
 
 // Health check API
 app.get("/health", (req, res) => {

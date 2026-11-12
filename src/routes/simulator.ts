@@ -16,6 +16,18 @@ router.post("/traffic", async (req: Request, res: Response) => {
     const scenario = req.body.scenario || "normal";
     const count = Math.min(100, Math.max(1, Number(req.body.count) || 20));
 
+    // Optional timestamp anchor for testing historical incidents.
+    const timestampAnchor = req.body.timestamp
+      ? new Date(req.body.timestamp)
+      : null;
+
+    if (timestampAnchor && Number.isNaN(timestampAnchor.getTime())) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid timestamp. Provide a valid ISO date."
+      });
+    }
+
     const scenarios = ["normal", "degradation", "database-timeout"];
 
     if (!scenarios.includes(scenario)) {
@@ -62,7 +74,9 @@ router.post("/traffic", async (req: Request, res: Response) => {
           statusCode >= 400 ? "warning" : "info",
         message,
         requestId: randomUUID(),
-        timestamp: new Date(Date.now() - (count - i) * 1000)
+        timestamp: timestampAnchor
+          ? new Date(timestampAnchor.getTime() + i * 1000)
+          : new Date(Date.now() - (count - i) * 1000)
       };
     });
 
